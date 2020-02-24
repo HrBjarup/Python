@@ -74,9 +74,9 @@ def line_plot_for_two_cities(city_dict_1, city_dict_2):
     #Second dict of data:
     plt.plot(list(city_dict_2.keys()),list(city_dict_2.values()), linewidth=2)
     # Set chart title and label axes. 
-    plt.title("Square Numbers", fontsize=24)
-    plt.xlabel("Value", fontsize=14)
-    plt.ylabel("Square of Value", fontsize=14)
+    plt.title("Østerbro and Vesterbro", fontsize=24)
+    plt.xlabel("Year", fontsize=14)
+    plt.ylabel("Amount of people", fontsize=14)
     # Set size of tick labels.
     plt.tick_params(axis='both', labelsize=14)
 
