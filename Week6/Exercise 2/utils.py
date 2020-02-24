@@ -6,12 +6,6 @@ import sys
 
 def lookup_and_save_filenames(folder_path, save_file_path):
     entries = os.listdir(folder_path)
-    # Doesn't seem to be necessary, but I don't know why
-    # if platform.system() == 'Windows':
-    #     newline=''
-    # else:
-    #     newline=None
-    #with open(save_file_path, 'w', newline=newline) as save_file:
     with open(save_file_path, 'w') as save_file:
         for entry in entries:
             if os.path.isfile(folder_path + "/" + entry):
