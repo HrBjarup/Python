@@ -1,6 +1,8 @@
 import requests
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
+import multiprocessing
 import os
 
 class NotFoundException(Exception):
@@ -106,16 +108,52 @@ class Util():
         avg = vowels / len(words)
         return avg
 
+    # I had a lot of unsolved problems with multiprocessing so this function is a wreck
+    # after I tried so many different things
     def hardest_read(self):
         """Returns the filename of the text with the highest vowel score. Uses multiprocessing."""
-        score_dict = {}
+        filename_list = []
         for f in self.filenames:
-            with open("./download_dumps/" + f, "r") as current_file:
-                score_dict[f] = self.avg_vowels(current_file.read())
-        res = {k: v for k, v in sorted(score_dict.items(), key=lambda item: item[1], reverse=True)}
-        return "./download_dumps/" + list(res.keys())[0]
-        #return {list(res.keys())[0] : list(res.values())[0]}
-    
+            filename_list.append("./download_dumps/" + f)
+
+        def prepare_and_measure_file(filename):
+            text = ""
+            with open(filename, "r") as f:
+                text = f.read()
+            avg = self.avg_vowels(text)
+            res = (filename, avg)
+            return res
+
+        temp_res_list = []
+
+        cpu_count = multiprocessing.cpu_count()
+
+        # def small_func(num):
+        #     return num + 2
+
+        # test_data = [1,2,3,4,5]
+
+        def split_workload(func, args, workers):
+            with ProcessPoolExecutor(workers) as ex:
+                res = ex.map(func, args)
+            print("Ready to return data")
+            return list(res)
+        # temp_res = split_workload(small_func, test_data, cpu_count)
+        temp_res_list.extend(split_workload(prepare_and_measure_file, filename_list, cpu_count))
+        print("Temp_res")
+        print(temp_res_list)
+        # print("Temp_res_list" + str(temp_res_list))
+        # return temp_res_list
+        temp_dict = {}
+        def convert(tup, di): 
+            di = dict(tup) 
+            return di 
+        
+        temp_res_dict = convert(temp_res_list, temp_dict)
+        print("temp_res_dict: " + str(temp_res_dict))
+        res = {k: v for k, v in sorted(temp_res_dict.items(), key=lambda item: item[1], reverse=True)}
+        return list(res.keys())[0]
+
 
 # Create a module containing a class with the following methods:
 
